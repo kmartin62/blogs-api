@@ -7,7 +7,7 @@ class DatabaseFactory:
     pass
 
   @staticmethod
-  def get_database_connection_string(db_type: str) -> DatabaseEnvironment:
+  def get_database_connection_string(db_type: str) -> str:
     if db_type == 'postgres':
       return str(PostgresEnvironment())
     else:
