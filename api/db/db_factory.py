@@ -1,6 +1,4 @@
-from environment.database_environment import DatabaseEnvironment
-from environment import PostgresEnvironment
-
+from .environment.postgres_environment import PostgresEnvironment
 
 class DatabaseFactory:
   def __init__(self):

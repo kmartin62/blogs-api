@@ -1,4 +1,4 @@
-from database_environment import DatabaseEnvironment
+from .database_environment import DatabaseEnvironment
 
 class PostgresEnvironment(DatabaseEnvironment):
   def __init__(self):
