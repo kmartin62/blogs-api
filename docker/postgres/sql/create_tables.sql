@@ -59,8 +59,10 @@ CREATE TABLE Post (
     content TEXT NOT NULL,
     created_by VARCHAR(100) NOT NULL,
     published_at TIMESTAMP DEFAULT NOW(),
+    category_id INTEGER NOT NULL,
     updated_at TIMESTAMP,
-    FOREIGN KEY (created_by) REFERENCES Users(email)
+    FOREIGN KEY (created_by) REFERENCES Users(email),
+    FOREIGN KEY (category_id) REFERENCES Category(id)
 );
 
 CREATE TABLE PostTags (
@@ -72,11 +74,11 @@ CREATE TABLE PostTags (
     UNIQUE (post_id, tag_id)
 );
 
-CREATE TABLE PostCategory (
-    id SERIAL PRIMARY KEY,
-    post_id INTEGER NOT NULL,
-    category_id INTEGER NOT NULL,
-    FOREIGN KEY (post_id) REFERENCES Post(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES Category(id) ON DELETE CASCADE,
-    UNIQUE (post_id, category_id)
-);
+-- CREATE TABLE PostCategory (
+--     id SERIAL PRIMARY KEY,
+--     post_id INTEGER NOT NULL,
+--     category_id INTEGER NOT NULL,
+--     FOREIGN KEY (post_id) REFERENCES Post(id) ON DELETE CASCADE,
+--     FOREIGN KEY (category_id) REFERENCES Category(id) ON DELETE CASCADE,
+--     UNIQUE (post_id, category_id)
+-- );
