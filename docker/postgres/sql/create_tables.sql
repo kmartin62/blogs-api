@@ -37,15 +37,6 @@ INSERT INTO Tag (name, description) VALUES
 ('Artificial Intelligence', 'Discussions and tutorials on AI concepts, applications, advancements, and ethical considerations.');
 
 
-CREATE TABLE Post (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(100) NOT NULL,
-    content TEXT NOT NULL,
-    published_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP
-);
-
-
 CREATE TABLE Users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
@@ -54,13 +45,23 @@ CREATE TABLE Users (
     password VARCHAR(100) NOT NULL,
     middle_name VARCHAR(100),
     created_at TIMESTAMP DEFAULT NOW(), 
-    updated_at TIMESTAMP
+    updated_at TIMESTAMP,
+    UNIQUE (email)
 );
 
 --- ADD FAKE USER, TODO: Remove when the app is fully functional ---
 INSERT INTO Users (first_name, last_name, email, password, middle_name) VALUES
 ('fake_name', 'fake_lastname', 'fake_email', 'fake_password', 'fake_middle_name');
 
+CREATE TABLE Post (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    content TEXT NOT NULL,
+    created_by VARCHAR(100) NOT NULL,
+    published_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES Users(email)
+);
 
 CREATE TABLE PostTags (
     id SERIAL PRIMARY KEY,
