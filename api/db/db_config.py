@@ -29,4 +29,4 @@ class DatabaseConfiguration:
 configuration = DatabaseConfiguration(database_uri=DatabaseFactory.get_database_connection_string("postgres"))
 
 Base = configuration.base
-Session = configuration.session
+Session = configuration.session()
