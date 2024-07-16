@@ -50,8 +50,8 @@ CREATE TABLE Users (
 );
 
 --- ADD FAKE USER, TODO: Remove when the app is fully functional ---
-INSERT INTO Users (first_name, last_name, email, password, middle_name) VALUES
-('fake_name', 'fake_lastname', 'fake_email', 'fake_password', 'fake_middle_name');
+INSERT INTO Users (first_name, last_name, email, password) VALUES
+('Martin', 'Kostadinov', 'martin.kostadinov@hotmail.com', 'salted#hashed#');
 
 CREATE TABLE Post (
     id SERIAL PRIMARY KEY,
@@ -72,7 +72,7 @@ CREATE TABLE PostTags (
     UNIQUE (post_id, tag_id)
 );
 
-CREATE TABLE PostCategories (
+CREATE TABLE PostCategory (
     id SERIAL PRIMARY KEY,
     post_id INTEGER NOT NULL,
     category_id INTEGER NOT NULL,
