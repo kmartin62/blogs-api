@@ -1,7 +1,4 @@
 from flask import Flask
-from dotenv import load_dotenv
-
-from db.db_config import Base
 
 app = Flask(__name__)
 
@@ -11,5 +8,4 @@ def hello_world():
 
 
 if __name__ == "__main__":
-  load_dotenv()
-  app.run(debug=True)
+  app.run(debug=False)
