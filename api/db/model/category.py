@@ -8,4 +8,4 @@ class Category(Base):
   title = Column(String(100), nullable=False)
   description = Column(String(100), nullable=True)
 
-  posts = relationship("Post", secondary="postcategory", back_populates="category")
+  posts = relationship("Post", back_populates="category")

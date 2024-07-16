@@ -12,7 +12,27 @@ class Post(Base):
     created_by = Column(String(100), ForeignKey('users.email'), nullable=False)
     published_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, nullable=True, default=None)
+    category_id = Column(Integer, ForeignKey('category.id'), nullable=False)
 
-    tags = relationship("Tag", secondary="posttags", back_populates="posts")
-    category = relationship("Category", secondary="postcategory", back_populates="posts")
+    tags = relationship("Tag", secondary="posttags", back_populates="posts", lazy='joined')
+    category = relationship("Category", back_populates="posts", lazy='joined')
+
+    def to_dict(self):
+        return {"id": self.id,
+                "title": self.title,
+                "content": self.content,
+                "created_by": self.created_by,
+                "published_at": self.published_at,
+                "updated_at": self.updated_at,
+                "category": {
+                    "id": self.category.id,
+                    "title": self.category.title,
+                    "description": self.category.description
+                }, "tags": [
+                    {
+                        "id": tag.id,
+                        "name": tag.name,
+                        "description": tag.description
+                    } for tag in self.tags
+                ]}
   

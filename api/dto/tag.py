@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 @dataclass
-class Tag:
+class TagDto:
+  id: int
   name: str
   description: str
