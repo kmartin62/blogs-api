@@ -1,0 +1,21 @@
+{
+  "title": "Sample Post Title",
+  "content": "This is the content of the sample post.",
+  "category": {
+    "id": 1,
+    "title": "Hardware",
+    "description": "Reviews, news, and guides on the latest computer hardware, components, and peripherals."
+  },
+  "tags": [
+    {
+      "id": 1,
+      "name": "Cloud Computing",
+      "description": "Articles and tutorials about cloud platforms, services, and technologies including AWS, Azure, Google Cloud, and more."
+    },
+    {
+      "id": 2,
+      "name": "Cybersecurity",
+      "description": "Insights, news, and best practices related to securing information systems and protecting data from cyber threats."
+    }
+  ]
+}
