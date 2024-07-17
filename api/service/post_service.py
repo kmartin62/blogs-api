@@ -1,50 +1,29 @@
+from service.utils import generate_category_model, generate_tag_models
 from db.model.category import Category
 from db.model.post import Post
 from db.model.tag import Tag
 from dto.post import PostDto
 from service.service_templ import CrudService
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm import joinedload
 import logging
-
+from datetime import datetime
 class PostService(CrudService):
 
   def __init__(self, session):
     self.session = session
 
   def insert(self, dto):
-    if not isinstance(dto, PostDto):
-        raise AssertionError(f"Expected PostDto, got {type(dto)}")
-    
     try:
-      post_dto = dto
+      post_dto = PostDto(**dto)
       post_to_insert = Post(
         title = post_dto.title,
         content = post_dto.content,
         created_by = "martin.kostadinov@hotmail.com", #TODO: Change with currently logged in user
       )
 
-      """Move from here"""
-      tags = list()
-      for tag in post_dto.tags:
-        try:
-          tag = self.session.query(Tag).filter_by(id=tag.get('id')).one()
-          tags.append(tag)
-        except NoResultFound as no_result_found:
-          logging.error(f"A NoResultFound error. Error message: {repr(no_result_found)}")
-          return None
-        except Exception as ex:
-          logging.error(f"An Exception caught. Error message: {repr(ex)}")
-          return None
-        
-      try:
-        category = self.session.query(Category).filter_by(id=post_dto.category.get('id')).one()
-      except NoResultFound as no_result_found:
-        logging.error(f"A NoResultFound error. Error message: {repr(no_result_found)}")
-        return None
-      except Exception as ex:
-        logging.error(f"An Exception caught. Error message: {repr(ex)}")
-        return None
-      """To here in a tag and category service"""
+      category = generate_category_model(post_dto.category, self.session)
+      tags = generate_tag_models(post_dto.tags, self.session)
 
       post_to_insert.tags = tags
       post_to_insert.category = category
@@ -52,25 +31,64 @@ class PostService(CrudService):
       self.session.add(post_to_insert)
       self.session.commit()
     except Exception as ex:
-      logging.error(f"An Exception caught. Error message: {repr(ex)}")
+      logging.error(f"An Exception caught. Error message: {repr(ex)}. Object received: {dto}")
       return None
     finally:
       self.session.close()
+    return post_to_insert
   
   def delete(self, id):
-    return super().delete()
+    try:
+      post = self.session.query(Post).options(joinedload(Post.category), joinedload(Post.tags)).filter(Post.id==id).first()
+      self.session.delete(post)
+      self.session.commit()
+    except Exception as ex:
+      logging.error(f"An Exception caught. Error message: {repr(ex)}")
+      self.session.rollback()
+      return None
+    finally:
+      self.session.close()
+    return post
   
   def get_all(self):
     try:
       posts = self.session.query(Post).all()
     except Exception as ex:
-      raise
+      logging.error(f"An Exception caught. Error message: {repr(ex)}")
+      return None
     finally:
       self.session.close()
     return posts
 
   def get_by_id(self, id):
-    return super().get_by_id()
+    try:
+      post = self.session.query(Post).filter(Post.id == id).first()
+    except Exception as ex:
+      logging.error(f"An Exception caught. Error message: {repr(ex)}")
+      return None
+    finally:
+      self.session.close()
+    return post
   
   def update(self, dto):
-    return super().update()
+
+    try:
+      post_to_update = self.session.query(Post).filter(Post.id == dto.get("id")).one()
+
+      post_to_update.title = dto.get("title")
+      post_to_update.content = dto.get("content")
+      post_to_update.updated_at = datetime.now()
+
+      category = generate_category_model(dto.get('category'), self.session)
+      post_to_update.category_id = category.id
+
+      tags = generate_tag_models(dto.get("tags"), self.session)
+      post_to_update.tags = tags
+
+      self.session.commit()
+    except Exception as ex:
+      logging.error(f"An Exception caught. Error message: {repr(ex)}")
+      return None
+    finally:
+      self.session.close()
+    return post_to_update
