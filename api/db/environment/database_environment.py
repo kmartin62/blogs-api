@@ -1,10 +1,10 @@
 from abc import ABC
 from dataclasses import dataclass
-
+import os
 @dataclass
-class DatabaseEnvironment(ABC): #TODO: Read from .env
-    user: str = 'blog_admin'
-    password: str = 'DQZ7iH10v8hH7Wn'
-    host: str = 'db'
-    port: int = 5432
-    database: str = 'blogs'
+class DatabaseEnvironment(ABC):
+    user: str = os.getenv("POSTGRES_USER")
+    password: str = os.getenv("POSTGRES_PASSWORD")
+    host: str = os.getenv("POSTGRES_HOST")
+    port: int = os.getenv("POSTGRES_PORT")
+    database: str = os.getenv("POSTGRES_DB")

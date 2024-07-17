@@ -4,12 +4,13 @@ import jwt
 
 from db.db_config import Session
 from service.user_service import UserService
+import os
 
-secret_key = 'my_secret_key_for_jwt_encoding_and_decoding' # TODO: Add into .env file
 
 def authenticated(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        secret_key = os.getenv("JWT_SECRET_KEY") #TODO: Can be placed inside a container that stores env variables
         token = request.headers.get('Authorization', '')
         if not token:
             return jsonify({"message": "Token is missing"}), 401
