@@ -1,11 +1,43 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, make_response, request
 import logging
+from dto.user import UserSignIn
+from service.user_service import UserService
 from db.model.post import Post
 from db.db_config import Session
 from service.post_service import PostService
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 post_service = PostService(session=Session)
+user_service = UserService(session=Session)
+
+@app.route("/api/v1/users/sign_up", methods=["POST"])
+def sign_up():
+    data = request.get_json()
+    user_service.insert(data)
+    return jsonify({"message": "User created successfully"}), 201
+
+
+@app.route("/api/v1/users/sign_in", methods=["POST"])
+def sign_in():
+    data = request.get_json()
+    user = user_service.get_by_email(data)
+
+    if not user or not check_password_hash(user.password, data.get("password")):
+        return jsonify({"message": "Invalid credentials"}), 401
+    
+    token = jwt.encode({
+        'user_id': user.id,
+        'user_email': user.email,
+        'exp': datetime.now() + timedelta(hours=1)
+    }, 'my_secret_key_for_jwt_encoding_and_decoding', algorithm="HS256")
+
+    response = make_response()
+    response.headers['Authorization'] = f"Bearer {token}"
+
+    return response
 
 @app.route("/api/v1/posts/create", methods=["POST"])
 def create_post():
