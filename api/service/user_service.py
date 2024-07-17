@@ -1,5 +1,5 @@
 from db.model.user import User
-from dto.user import UserDto, UserSignIn
+from dto.user import UserDto
 from service.service_templ import CrudService
 import logging
 from werkzeug.security import generate_password_hash
@@ -30,10 +30,9 @@ class UserService(CrudService):
     return user_to_insert
   
   
-  def get_by_email(self, data):
+  def get_by_email(self, email):
     try:
-      signed_user = UserSignIn(**data)
-      user = self.session.query(User).filter(User.email == signed_user.email).first()
+      user = self.session.query(User).filter(User.email == email).first()
     except Exception as ex:
       logging.error(f"An Exception caught. Error message: {repr(ex)}")
       return None

@@ -1,3 +1,4 @@
+from db.model.user import User
 from .utils import generate_category_model, generate_tag_models
 from db.model.post import Post
 from dto.post import PostDto
@@ -5,6 +6,7 @@ from service.service_templ import CrudService
 from sqlalchemy.orm import joinedload
 import logging
 from datetime import datetime
+from flask import g
 
 class PostService(CrudService):
 
@@ -14,10 +16,11 @@ class PostService(CrudService):
   def insert(self, dto):
     try:
       post_dto = PostDto(**dto)
+      signed_user: User = g.user
       post_to_insert = Post(
         title = post_dto.title,
         content = post_dto.content,
-        created_by = "martin.kostadinov@hotmail.com", #TODO: Change with currently logged in user
+        created_by = signed_user.email,
       )
 
       category = generate_category_model(post_dto.category, self.session)
