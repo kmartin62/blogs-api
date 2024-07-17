@@ -8,5 +8,9 @@ class UserDto:
   last_name: str
   email: str
   password: str
-  created_at: datetime
-  updated_at: datetime
+
+
+@dataclass
+class UserSignIn:
+  email: str
+  password: str

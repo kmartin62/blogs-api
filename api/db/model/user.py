@@ -8,7 +8,7 @@ class User(Base):
   first_name = Column(String(100), nullable=False)
   last_name = Column(String(100), nullable=False)
   email = Column(String(100), nullable=False)
-  password = Column(String(100), nullable=False)
+  password = Column(String, nullable=False)
   middle_name = Column(String(100), nullable=True)
   created_at = Column(DateTime, default=datetime.now())
   updated_at = Column(DateTime, nullable=True, default=None)
