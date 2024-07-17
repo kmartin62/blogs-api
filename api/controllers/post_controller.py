@@ -5,10 +5,10 @@ from db.db_config import Session
 from middleware import authenticated
 from service.post_service import PostService
 
-app_posts = Blueprint('posts', __name__)
+app_posts = Blueprint('posts', __name__, url_prefix="/api/v1/posts")
 post_service = PostService(session=Session)
 
-@app_posts.route("/api/v1/posts/create", methods=["POST"])
+@app_posts.route("/create", methods=["POST"])
 @authenticated
 def create_post():
   data = request.get_json()
@@ -18,7 +18,7 @@ def create_post():
   return jsonify({'message': 'Post created successfully'}), 201
 
 
-@app_posts.route("/api/v1/posts/get_all", methods=["GET"])
+@app_posts.route("/get_all", methods=["GET"])
 @authenticated
 def get_all_posts():
   try:
@@ -28,7 +28,7 @@ def get_all_posts():
   return jsonify({"posts": [post.to_dict() for post in posts]}), 200
 
 
-@app_posts.route("/api/v1/posts/get", methods=["GET"])
+@app_posts.route("/get", methods=["GET"])
 @authenticated
 def get_post_by_id():
   post_id = request.args.get('id')
@@ -41,7 +41,7 @@ def get_post_by_id():
   return jsonify({"posts": posts.to_dict()}), 200
 
 
-@app_posts.route("/api/v1/posts/remove", methods=["DELETE"])
+@app_posts.route("/remove", methods=["DELETE"])
 @authenticated
 def delete_post():
   post_id = request.args.get('id')
@@ -54,7 +54,7 @@ def delete_post():
   return jsonify({"message": "post deleted"}), 200
 
 
-@app_posts.route("/api/v1/posts/update", methods=["PUT"])
+@app_posts.route("/update", methods=["PUT"])
 @authenticated
 def update_post():
   data = request.get_json()

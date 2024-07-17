@@ -5,10 +5,10 @@ from db.db_config import Session
 from service.user_service import UserService
 from werkzeug.security import check_password_hash
 
-app_users = Blueprint('users', __name__)
+app_users = Blueprint('users', __name__, url_prefix="/api/v1/users")
 user_service = UserService(session=Session)
 
-@app_users.route("/api/v1/users/sign_up", methods=["POST"])
+@app_users.route("/sign_up", methods=["POST"])
 def sign_up():
     data = request.get_json()
     inserted_user = user_service.insert(data)
@@ -17,7 +17,7 @@ def sign_up():
     return jsonify({"message": "User created successfully"}), 201
 
 
-@app_users.route("/api/v1/users/sign_in", methods=["POST"])
+@app_users.route("/sign_in", methods=["POST"])
 def sign_in():
     data = request.get_json()
     user = user_service.get_by_email(data.get("email"))
