@@ -5,6 +5,7 @@ from service.service_templ import CrudService
 from sqlalchemy.orm import joinedload
 import logging
 from datetime import datetime
+
 class PostService(CrudService):
 
   def __init__(self, session):
