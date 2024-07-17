@@ -18,9 +18,10 @@ def create_post():
 
 @app.route("/api/v1/posts/get_all", methods=["GET"])
 def get_all_posts():
-  posts = post_service.get_all()
-  if not posts:
-    return jsonify({"message": "An error occured, check logs for more info"}), 500
+  try:
+    posts = post_service.get_all()
+  except Exception as ex:
+    return jsonify({"message": f"An error occured, message: {ex}"}), 500
   return jsonify({"posts": [post.to_dict() for post in posts]}), 200
 
 

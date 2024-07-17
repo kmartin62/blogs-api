@@ -1,10 +1,7 @@
-from service.utils import generate_category_model, generate_tag_models
-from db.model.category import Category
+from .utils import generate_category_model, generate_tag_models
 from db.model.post import Post
-from db.model.tag import Tag
 from dto.post import PostDto
 from service.service_templ import CrudService
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 import logging
 from datetime import datetime

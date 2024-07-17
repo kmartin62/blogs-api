@@ -1,6 +1,5 @@
 from db.model.category import Category
 from db.model.tag import Tag
-from dto.post import PostDto
 from sqlalchemy.exc import NoResultFound
 import logging
 
