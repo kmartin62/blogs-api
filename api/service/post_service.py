@@ -72,8 +72,11 @@ class PostService(CrudService):
     return post
   
   def update(self, dto):
-
     try:
+      dto = dto.get("posts")
+      if not dto:
+        logging.error(f"Invalid object received: {dto}")
+        return None
       post_to_update = self.session.query(Post).filter(Post.id == dto.get("id")).one()
 
       post_to_update.title = dto.get("title")
