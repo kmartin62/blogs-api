@@ -1,13 +1,12 @@
 from flask import Flask, jsonify, make_response, request
 import logging
-from dto.user import UserSignIn
+from dto.user import UserDto
+from middleware import authenticated
+from utils import encode_jwt_token
 from service.user_service import UserService
-from db.model.post import Post
 from db.db_config import Session
 from service.post_service import PostService
-from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
-from datetime import datetime, timedelta
+from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 post_service = PostService(session=Session)
@@ -16,23 +15,21 @@ user_service = UserService(session=Session)
 @app.route("/api/v1/users/sign_up", methods=["POST"])
 def sign_up():
     data = request.get_json()
-    user_service.insert(data)
+    inserted_user = user_service.insert(data)
+    if not inserted_user:
+      return jsonify({"message": "User creation failed"}), 500
     return jsonify({"message": "User created successfully"}), 201
 
 
 @app.route("/api/v1/users/sign_in", methods=["POST"])
 def sign_in():
     data = request.get_json()
-    user = user_service.get_by_email(data)
+    user = user_service.get_by_email(data.get("email"))
 
     if not user or not check_password_hash(user.password, data.get("password")):
         return jsonify({"message": "Invalid credentials"}), 401
     
-    token = jwt.encode({
-        'user_id': user.id,
-        'user_email': user.email,
-        'exp': datetime.now() + timedelta(hours=1)
-    }, 'my_secret_key_for_jwt_encoding_and_decoding', algorithm="HS256")
+    token = encode_jwt_token(user)
 
     response = make_response()
     response.headers['Authorization'] = f"Bearer {token}"
@@ -40,6 +37,7 @@ def sign_in():
     return response
 
 @app.route("/api/v1/posts/create", methods=["POST"])
+@authenticated
 def create_post():
   data = request.get_json()
   post = post_service.insert(data)
@@ -49,6 +47,7 @@ def create_post():
 
 
 @app.route("/api/v1/posts/get_all", methods=["GET"])
+@authenticated
 def get_all_posts():
   try:
     posts = post_service.get_all()
@@ -58,6 +57,7 @@ def get_all_posts():
 
 
 @app.route("/api/v1/posts/get", methods=["GET"])
+@authenticated
 def get_post_by_id():
   post_id = request.args.get('id')
   if not post_id:
@@ -70,6 +70,7 @@ def get_post_by_id():
 
 
 @app.route("/api/v1/posts/remove", methods=["DELETE"])
+@authenticated
 def delete_post():
   post_id = request.args.get('id')
   if not post_id:
@@ -82,6 +83,7 @@ def delete_post():
 
 
 @app.route("/api/v1/posts/update", methods=["PUT"])
+@authenticated
 def update_post():
   data = request.get_json()
   to_update = post_service.update(data)
